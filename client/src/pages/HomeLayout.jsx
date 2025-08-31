@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar"
 
 export default function HomeLayout() {
   return (
-    <div className="min-h-screen max-w-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       <Outlet />
     </div>
