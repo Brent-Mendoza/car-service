@@ -13,9 +13,11 @@ import ResetPassword from "./pages/reset-password/ResetPassword"
 import { loader as AdminLoader } from "./pages/admin/AdminPortal"
 import { loader as CustomerLoader } from "./pages/customer/CustomerPortal"
 import { loader as ServiceLoader } from "./pages/admin/services/Service"
+import { loader as AdminBookingLoader } from "./pages/admin/bookings/Booking"
 import Car, { loader as CarLoader } from "./pages/customer/cars/Car"
 import Service from "./pages/admin/services/Service"
 import LandingPage from "./pages/landing/LandingPage"
+import Booking from "./pages/admin/bookings/Booking"
 
 function App() {
   const router = createBrowserRouter([
@@ -58,6 +60,11 @@ function App() {
           path: "services",
           element: <Service />,
           loader: ServiceLoader,
+        },
+        {
+          path: "bookings",
+          element: <Booking />,
+          loader: AdminBookingLoader,
         },
       ],
     },

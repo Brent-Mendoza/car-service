@@ -66,6 +66,7 @@ model Booking {
   technician   User?     @relation("TechAssignments", fields: [technicianId], references: [id])
   technicianId Int?
   status       BookingStatus @default(PENDING)
+  rejectReason String?
   scheduledAt  DateTime
   jobs         Job[]
   createdAt    DateTime  @default(now())

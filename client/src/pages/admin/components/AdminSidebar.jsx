@@ -1,4 +1,12 @@
-import { Calendar, Home, Inbox, Search, Settings, Pickaxe } from "lucide-react"
+import {
+  Calendar,
+  Home,
+  Inbox,
+  Search,
+  Settings,
+  Pickaxe,
+  Book,
+} from "lucide-react"
 
 import {
   Sidebar,
@@ -53,6 +61,21 @@ export function AdminSidebar() {
                   >
                     <Pickaxe />
                     <span>Services</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/admin/bookings"
+                    className={
+                      location.pathname === "/admin/bookings"
+                        ? "bg-sidebar-accent"
+                        : ""
+                    }
+                  >
+                    <Book />
+                    <span>Bookings</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
