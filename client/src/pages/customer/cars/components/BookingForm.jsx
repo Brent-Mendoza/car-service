@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
-import { useCustomer } from "../../CustomerPortal"
 
 export default function BookingForm({ setBookModal, bookModal }) {
   const {

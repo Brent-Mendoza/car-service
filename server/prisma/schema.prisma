@@ -75,6 +75,7 @@ enum BookingStatus {
   PENDING
   CONFIRMED
   CANCELLED
+  REJECTED
 }
 
 model Job {
