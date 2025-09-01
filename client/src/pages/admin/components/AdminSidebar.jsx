@@ -1,12 +1,4 @@
-import {
-  Calendar,
-  Home,
-  Inbox,
-  Search,
-  Settings,
-  Pickaxe,
-  Book,
-} from "lucide-react"
+import { Calendar, Home, Pickaxe, Book, Wrench } from "lucide-react"
 
 import {
   Sidebar,
@@ -76,6 +68,43 @@ export function AdminSidebar() {
                   >
                     <Book />
                     <span>Bookings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/admin/parts"
+                    className={
+                      location.pathname === "/admin/parts"
+                        ? "bg-sidebar-accent"
+                        : ""
+                    }
+                  >
+                    <Wrench />
+                    <span>Parts</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Logs</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/admin/logs"
+                    className={
+                      location.pathname === "/admin/logs"
+                        ? "bg-sidebar-accent"
+                        : ""
+                    }
+                  >
+                    <Calendar />
+                    <span>Logs</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

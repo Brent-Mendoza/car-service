@@ -14,10 +14,15 @@ import { loader as AdminLoader } from "./pages/admin/AdminPortal"
 import { loader as CustomerLoader } from "./pages/customer/CustomerPortal"
 import { loader as ServiceLoader } from "./pages/admin/services/Service"
 import { loader as AdminBookingLoader } from "./pages/admin/bookings/Booking"
+import { loader as PartLoader } from "./pages/admin/parts/Part"
+import { loader as LogsLoader } from "./pages/admin/inventory/Logs"
+import { loader as TechnicianLoader } from "./pages/technician/TechnicianPortal"
 import Car, { loader as CarLoader } from "./pages/customer/cars/Car"
 import Service from "./pages/admin/services/Service"
 import LandingPage from "./pages/landing/LandingPage"
 import Booking from "./pages/admin/bookings/Booking"
+import Part from "./pages/admin/parts/Part"
+import Logs from "./pages/admin/inventory/Logs"
 
 function App() {
   const router = createBrowserRouter([
@@ -66,11 +71,22 @@ function App() {
           element: <Booking />,
           loader: AdminBookingLoader,
         },
+        {
+          path: "parts",
+          element: <Part />,
+          loader: PartLoader,
+        },
+        {
+          path: "logs",
+          element: <Logs />,
+          loader: LogsLoader,
+        },
       ],
     },
     {
       path: "/tech",
       element: <TechnicianPortal />,
+      loader: TechnicianLoader,
       children: [
         {
           index: true,

@@ -1,4 +1,40 @@
 import { prisma } from "../server.js"
+
+// Helper function to check technician availability
+async function checkTechnicianAvailability(
+  technicianId,
+  scheduledAt,
+  excludeBookingId = null
+) {
+  const scheduledDate = new Date(scheduledAt)
+
+  // Get start and end of the day for the scheduled date
+  const startOfDay = new Date(scheduledDate)
+  startOfDay.setHours(0, 0, 0, 0)
+
+  const endOfDay = new Date(scheduledDate)
+  endOfDay.setHours(23, 59, 59, 999)
+
+  // Check if technician has any bookings on that day
+  const existingBooking = await prisma.booking.findFirst({
+    where: {
+      technicianId: parseInt(technicianId),
+      scheduledAt: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+      // Exclude current booking if updating
+      ...(excludeBookingId && { id: { not: parseInt(excludeBookingId) } }),
+    },
+    include: {
+      customer: { select: { name: true } },
+      service: { select: { name: true } },
+    },
+  })
+
+  return existingBooking
+}
+
 export async function createBook(req, res) {
   try {
     const { carId, serviceId, scheduledAt, technicianId } = req.body
@@ -16,7 +52,21 @@ export async function createBook(req, res) {
     if (!service.allowCustomerTechChoice && technicianId) {
       return res
         .status(400)
-        .json({ error: "Technician cannot be chosen for this service" })
+        .json({ message: "Technician cannot be chosen for this service" })
+    }
+
+    // if customer can choose technician and they provided one, check availability
+    if (service.allowCustomerTechChoice && technicianId) {
+      const existingBooking = await checkTechnicianAvailability(
+        technicianId,
+        scheduledAt
+      )
+
+      if (existingBooking) {
+        return res.status(400).json({
+          message: "Technician is not available on the selected date",
+        })
+      }
     }
 
     // create booking
@@ -188,6 +238,29 @@ export async function assignTechnician(req, res) {
     if (!technicianId) {
       return res.status(400).json({ error: "Technician is required" })
     }
+    // Get the booking to check its scheduled date
+    const existingBooking = await prisma.booking.findUnique({
+      where: { id: parseInt(id) },
+      select: { scheduledAt: true },
+    })
+
+    if (!existingBooking) {
+      return res.status(404).json({ error: "Booking not found" })
+    }
+
+    // Check technician availability
+    const conflictingBooking = await checkTechnicianAvailability(
+      technicianId,
+      existingBooking.scheduledAt,
+      id // exclude current booking from check
+    )
+
+    if (conflictingBooking) {
+      return res.status(400).json({
+        message: `Technician already has a booking for ${conflictingBooking.service.name} with ${conflictingBooking.customer.name}`,
+      })
+    }
+
     const booking = await prisma.booking.update({
       where: { id: parseInt(id) },
       data: { technicianId: parseInt(technicianId) },
