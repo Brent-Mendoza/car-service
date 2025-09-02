@@ -25,6 +25,7 @@ import Technicians, {
   loader as TechnicianListLoader,
 } from "./pages/admin/technicians/Technician"
 import Car, { loader as CarLoader } from "./pages/customer/cars/Car"
+import { loader as CustomerBookingLoader } from "./pages/customer/CustomerDashboard"
 import Service from "./pages/admin/services/Service"
 import LandingPage from "./pages/landing/LandingPage"
 import Booking from "./pages/admin/bookings/Booking"
@@ -124,6 +125,7 @@ function App() {
         {
           index: true,
           element: <CustomerDashboard />,
+          loader: CustomerBookingLoader,
         },
         {
           path: "cars",
