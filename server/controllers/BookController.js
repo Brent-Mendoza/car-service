@@ -210,6 +210,11 @@ export async function getBookings(req, res) {
               },
             },
           },
+          quote: {
+            include: {
+              billing: true, // 🔹 include billing details too
+            },
+          },
         },
       }),
       prisma.booking.count({ where }),

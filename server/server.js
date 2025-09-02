@@ -12,6 +12,7 @@ import UserRouter from "./routes/user.js"
 import PartRouter from "./routes/part.js"
 import LogsRouter from "./routes/logs.js"
 import JobRouter from "./routes/jobs.js"
+import QuoteRouter from "./routes/quotes.js"
 
 dotenv.config()
 
@@ -36,6 +37,7 @@ app.use("/api/users", UserRouter)
 app.use("/api/parts", PartRouter)
 app.use("/api/jobs", JobRouter)
 app.use("/api/inventory/logs", LogsRouter)
+app.use("/api/quotes", QuoteRouter)
 
 app.use((req, res) => {
   res.status(404).json({ message: "Not Found" })

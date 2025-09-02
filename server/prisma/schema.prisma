@@ -24,7 +24,7 @@ model User {
   cars      Car[]
   bookings  Booking[]
   notes     JobNote[]
-  quotes     Quote[]
+  quotes    Quote[]
   techAssignments Booking[] @relation("TechAssignments")
   blocked Boolean @default(false)
 }
@@ -71,6 +71,7 @@ model Booking {
   rejectReason String?
   scheduledAt  DateTime
   jobs         Job[]
+  quote        Quote?
   createdAt    DateTime  @default(now())
 }
 
@@ -144,7 +145,8 @@ model Quote {
   id        Int      @id @default(autoincrement())
   customer  User     @relation(fields: [customerId], references: [id])
   customerId Int
-  details   String
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  bookingId Int      @unique  // One-to-one relationship
   total     Float
   status    QuoteStatus @default(PENDING)
   billing   Billing?
