@@ -3,8 +3,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 
 import {
@@ -24,62 +24,56 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { formatCurrency } from "@/lib/formatter"
-import { Check, Loader2, MoreVertical, Pickaxe, Plus, X } from "lucide-react"
+import { Loader2, MoreVertical, StopCircle, ToolCase, Undo } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useLoaderData } from "react-router-dom"
 import { toast } from "react-toastify"
-import ServicePagination from "./components/ServicePagination"
-import ServiceModal from "./components/ServiceModal"
+import TechPagination from "./components/TechnicianPagination"
+import TechModal from "./components/TechModal"
+import DeleteTechModal from "./components/DeleteTechModal"
 
 export async function loader() {
-  const res = await axiosClient.get("/services")
+  const res = await axiosClient.get("/users/all-technicians")
   return res.data
 }
 
-export default function Service() {
+export default function Technicians() {
   const initialData = useLoaderData()
   const [data, setData] = useState(initialData) //mapping the data
   const [search, setSearch] = useState("") //search filter
-  const [filter, setFilter] = useState("id_desc") //filters
+  const [filter, setFilter] = useState("latest") //filters
   const [loading, setLoading] = useState(false) //loading state
   const [currentPage, setCurrentPage] = useState(1) //pagination
   const [modal, setModal] = useState({
-    service: null,
+    user: null,
     open: false,
-  }) //toggle add modal
-
+  })
+  const [deleteModal, setDeleteModal] = useState({
+    id: null,
+    open: false,
+  })
   //function to fetch filtered data
-  const fetchServices = async (searchTerm = "", sortBy = "", page = 1) => {
+  const fetchUsers = async (searchTerm = "", sortBy = "", page = 1) => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
       if (searchTerm) params.append("search", searchTerm)
       if (sortBy) params.append("sort", sortBy)
       params.append("page", page.toString())
-      const res = await axiosClient.get(`/services?${params.toString()}`)
+      const res = await axiosClient.get(
+        `/users/all-technicians?${params.toString()}`
+      )
       setData(res.data)
     } catch (error) {
-      toast.error(`Error fetching services`, error)
+      toast.error(`Error fetching technicians`, error)
     } finally {
       setLoading(false)
     }
   }
-
-  const deleteService = async (id) => {
-    try {
-      await axiosClient.delete(`/services/${id}`)
-      toast.success("Service deleted successfully!")
-      fetchServices()
-    } catch (error) {
-      toast.error(`Error deleting service`, error)
-    }
-  }
-
   //Debounce search
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      fetchServices(search, filter, currentPage)
+      fetchUsers(search, filter, currentPage)
     }, 300)
 
     return () => clearTimeout(timeoutId)
@@ -90,32 +84,32 @@ export default function Service() {
     setCurrentPage(1)
   }, [search, filter])
 
-  const serviceFilters = [
-    { value: "id_desc", label: "Latest" },
-    { value: "id_asc", label: "Oldest" },
-    { value: "cost_desc", label: "Highest Cost" },
-    { value: "cost_asc", label: "Lowest Cost" },
-    { value: "name_asc", label: "A-Z" },
-    { value: "name_desc", label: "Z-A" },
-    { value: "allowed", label: "Allowed to assign Technicians" },
-    { value: "not_allowed", label: "Not allowed to assign Technicians" },
+  const userFilters = [
+    { value: "latest", label: "Latest" },
+    { value: "oldest", label: "Oldest" },
   ]
 
-  const unavailableService = async (id) => {
+  const statusFilters = [
+    { value: null, label: "All" },
+    { value: "User", label: "User" },
+    { value: "Customer", label: "Customer" },
+  ]
+
+  const blockUser = async (id) => {
     try {
-      await axiosClient.patch(`/services/${id}/hide`)
-      toast.success("Service is now unavailable for customers!")
-      fetchServices()
+      await axiosClient.patch(`/users/${id}/block`)
+      toast.success("User blocked successfully!")
+      fetchUsers(search, filter, currentPage)
     } catch (error) {
       toast.error("Something went wrong!")
     }
   }
 
-  const availableService = async (id) => {
+  const unblockUser = async (id) => {
     try {
-      await axiosClient.patch(`/services/${id}/unhide`)
-      toast.success("Service is now available for customers!")
-      fetchServices()
+      await axiosClient.patch(`/users/${id}/unblock`)
+      toast.success("User unblocked successfully!")
+      fetchUsers(search, filter, currentPage)
     } catch (error) {
       toast.error("Something went wrong!")
     }
@@ -126,19 +120,12 @@ export default function Service() {
       <main className="flex-1 p-10 border-t bg-gray-100/50 flex flex-col gap-10">
         <section className="flex items-center justify-between">
           <h1 className="text-xl lg:text-2xl flex items-center gap-2 font-bold">
-            <Pickaxe />
-            Services
+            <ToolCase />
+            Technicians
           </h1>
-          <button
-            onClick={() => setModal((prev) => ({ ...prev, open: true }))}
-            className="text-md lg:text-lg flex items-center gap-1 bg-black text-white py-2 px-4 rounded-md cursor-pointer hover:bg-black/70 hover:scale-105 duration-200"
-          >
-            <Plus />
-            Service
-          </button>
         </section>
         <section className="flex-1 flex flex-col">
-          <div className="flex items-center gap-5 max-[400px]:flex-col max-[400px]:items-start">
+          <div className="flex items-center gap-5 max-[390px]:flex-col max-[390px]:items-start">
             <div className="flex flex-col">
               <label htmlFor="search">Search:</label>
               <input
@@ -158,7 +145,7 @@ export default function Service() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Filters</SelectLabel>
-                    {serviceFilters.map((filter) => (
+                    {userFilters.map((filter) => (
                       <SelectItem key={filter.value} value={filter.value}>
                         {filter.label}
                       </SelectItem>
@@ -173,16 +160,9 @@ export default function Service() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead className="max-[470px]:hidden">Cost</TableHead>
-                  <TableHead className="max-[1360px]:hidden">
-                    Description
-                  </TableHead>
-                  <TableHead className="max-[700px]:hidden">
-                    Allow Technician
-                  </TableHead>
-                  <TableHead className="max-[400px]:hidden">
-                    Available
-                  </TableHead>
+                  <TableHead className="max-[470px]:hidden">Email</TableHead>
+                  <TableHead className="max-[600px]:hidden">Phone</TableHead>
+                  <TableHead>Blocked</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -200,48 +180,37 @@ export default function Service() {
                         {d.name}
                       </TableCell>
                       <TableCell className="max-[470px]:hidden">
-                        {formatCurrency(d.cost)}
+                        {d.email}
                       </TableCell>
-                      <TableCell className="max-[1360px]:hidden">
-                        {d.description}
+                      <TableCell className="max-[600px]:hidden">
+                        {d.phone ? d.phone : "N/A"}
                       </TableCell>
-                      <TableCell className="max-[700px]:hidden">
-                        {d.allowCustomerTechChoice ? (
-                          <Check className="text-green-500" />
-                        ) : (
-                          <X className="text-red-500" />
-                        )}
-                      </TableCell>
-                      <TableCell className="max-[400px]:hidden">
-                        {!d.hidden ? (
-                          <Check className="text-green-500" />
-                        ) : (
-                          <X className="text-red-500" />
-                        )}
-                      </TableCell>
+                      <TableCell>{d.blocked ? "Yes" : "No"}</TableCell>
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger>
                             <MoreVertical className="cursor-pointer" />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
-                            {!d.hidden ? (
+                            {!d.blocked ? (
                               <DropdownMenuItem
                                 onClick={() => {
-                                  unavailableService(d.id)
+                                  blockUser(d.id)
                                 }}
                                 className="cursor-pointer"
                               >
-                                Unavailable
+                                <StopCircle />
+                                Block User?
                               </DropdownMenuItem>
                             ) : (
                               <DropdownMenuItem
                                 onClick={() => {
-                                  availableService(d.id)
+                                  unblockUser(d.id)
                                 }}
                                 className="cursor-pointer"
                               >
-                                Available
+                                <Undo />
+                                UnBlock User?
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuSeparator />
@@ -250,16 +219,22 @@ export default function Service() {
                                 setModal((prev) => ({
                                   ...prev,
                                   open: true,
-                                  service: d,
+                                  user: d,
                                 }))
                               }}
-                              className="cursor-pointer"
+                              className="cursor-pointer flex items-center justify-center"
                             >
                               Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => deleteService(d.id)}
-                              className="cursor-pointer"
+                              onClick={() => {
+                                setDeleteModal((prev) => ({
+                                  ...prev,
+                                  open: true,
+                                  id: d.id,
+                                }))
+                              }}
+                              className="cursor-pointer flex items-center justify-center"
                             >
                               Delete
                             </DropdownMenuItem>
@@ -278,7 +253,7 @@ export default function Service() {
 
               {data.totalPages > 1 && (
                 <div>
-                  <ServicePagination
+                  <TechPagination
                     data={data}
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
@@ -290,10 +265,13 @@ export default function Service() {
         </section>
       </main>
       {modal.open && (
-        <ServiceModal
-          setModal={setModal}
-          modal={modal}
-          fetchServices={fetchServices}
+        <TechModal setModal={setModal} fetchUsers={fetchUsers} modal={modal} />
+      )}
+      {deleteModal.open && (
+        <DeleteTechModal
+          setDeleteModal={setDeleteModal}
+          deleteModal={deleteModal}
+          fetchUsers={fetchUsers}
         />
       )}
     </>

@@ -96,7 +96,7 @@ export default function Logs() {
           </h1>
         </section>
         <section className="flex-1 flex flex-col">
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-5 max-[500px]:flex-col max-[500px]:items-start">
             <div className="flex flex-col">
               <label htmlFor="search">Search:</label>
               <input
@@ -150,8 +150,8 @@ export default function Logs() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Quantity</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Date</TableHead>
+                  <TableHead className="max-[500px]:hidden">Type</TableHead>
+                  <TableHead className="max-[420px]:hidden">Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -179,10 +179,10 @@ export default function Logs() {
                           </span>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="max-[500px]:hidden">
                         {d.type === "IN" ? "Stock In" : "Stock Out"}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="max-[420px]:hidden">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4 text-gray-500" />
                           <div>

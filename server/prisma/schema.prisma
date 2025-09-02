@@ -26,6 +26,7 @@ model User {
   notes     JobNote[]
   quotes     Quote[]
   techAssignments Booking[] @relation("TechAssignments")
+  blocked Boolean @default(false)
 }
 
 enum Role {
@@ -53,6 +54,7 @@ model Service {
   description String
   allowCustomerTechChoice Boolean @default(true)
   bookings  Booking[]
+  hidden Boolean @default(false)
 }
 
 model Booking {

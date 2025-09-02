@@ -17,6 +17,13 @@ import { loader as AdminBookingLoader } from "./pages/admin/bookings/Booking"
 import { loader as PartLoader } from "./pages/admin/parts/Part"
 import { loader as LogsLoader } from "./pages/admin/inventory/Logs"
 import { loader as TechnicianLoader } from "./pages/technician/TechnicianPortal"
+import User, { loader as UserListLoader } from "./pages/admin/users/User"
+import Customer, {
+  loader as CustomerListLoader,
+} from "./pages/admin/customers/Customer"
+import Technicians, {
+  loader as TechnicianListLoader,
+} from "./pages/admin/technicians/Technician"
 import Car, { loader as CarLoader } from "./pages/customer/cars/Car"
 import Service from "./pages/admin/services/Service"
 import LandingPage from "./pages/landing/LandingPage"
@@ -80,6 +87,21 @@ function App() {
           path: "logs",
           element: <Logs />,
           loader: LogsLoader,
+        },
+        {
+          path: "users",
+          element: <User />,
+          loader: UserListLoader,
+        },
+        {
+          path: "customers",
+          element: <Customer />,
+          loader: CustomerListLoader,
+        },
+        {
+          path: "technicians",
+          element: <Technicians />,
+          loader: TechnicianListLoader,
         },
       ],
     },

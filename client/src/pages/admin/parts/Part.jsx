@@ -115,7 +115,7 @@ export default function Part() {
           </button>
         </section>
         <section className="flex-1 flex flex-col">
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-5 max-[400px]:flex-col max-[400px]:items-start">
             <div className="flex flex-col">
               <label htmlFor="search">Search:</label>
               <input
@@ -151,7 +151,7 @@ export default function Part() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Stock</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead className="max-[400px]:hidden">Status</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -169,7 +169,7 @@ export default function Part() {
                         {d.name}
                       </TableCell>
                       <TableCell>{d.stock}</TableCell>
-                      <TableCell>
+                      <TableCell className="max-[400px]:hidden">
                         {d.stock === 0 ? (
                           <span className=" text-red-500  font-bold flex items-center gap-1">
                             <FileX />

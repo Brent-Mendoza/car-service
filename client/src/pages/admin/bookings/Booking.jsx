@@ -3,6 +3,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -45,6 +46,7 @@ import AssignTechnicianModal from "./components/AssignTechnicianModal"
 import RejectBookingModal from "./components/RejectBookingModal"
 import ConfirmBookingModal from "./components/ConfirmBookingModal"
 import ViewBookingModal from "./components/ViewBookingModal"
+import GenerateQuoteModal from "./components/GenerateQuoteModal"
 
 export async function loader() {
   const res = await axiosClient.get("/bookings")
@@ -72,6 +74,8 @@ export default function Booking() {
     id: null,
   })
   const [viewBooking, setViewBooking] = useState({ open: false, booking: null })
+  const [quoteModal, setQuoteModal] = useState({ open: false, booking: null })
+  console.log(data.data)
 
   //function to fetch filtered data
   const fetchBookings = async (
@@ -147,7 +151,7 @@ export default function Booking() {
           </h1>
         </section>
         <section className="flex-1 flex flex-col">
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-5 max-[600px]:flex-col max-[600px]:items-start">
             <div className="flex flex-col">
               <label htmlFor="search">Search:</label>
               <input
@@ -198,12 +202,19 @@ export default function Booking() {
             <Table className="mt-5">
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
+                  <TableHead className="max-[1470px]:hidden">ID</TableHead>
                   <TableHead>Customer</TableHead>
-                  <TableHead>Car Details</TableHead>
-                  <TableHead>Service</TableHead>
-                  <TableHead>Scheduled Date</TableHead>
-                  <TableHead> Technician</TableHead>
+                  <TableHead className="max-[1420px]:hidden">
+                    Car Details
+                  </TableHead>
+                  <TableHead className="max-[1000px]:hidden">Service</TableHead>
+                  <TableHead className="max-[1200px]:hidden">
+                    Scheduled Date
+                  </TableHead>
+                  <TableHead className="max-[600px]:hidden">
+                    {" "}
+                    Technician
+                  </TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
@@ -218,7 +229,9 @@ export default function Booking() {
                 ) : (
                   data?.data?.map((booking) => (
                     <TableRow key={booking.id}>
-                      <TableCell className="font-mono">#{booking.id}</TableCell>
+                      <TableCell className="font-mono max-[1470px]:hidden">
+                        #{booking.id}
+                      </TableCell>
 
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -227,14 +240,14 @@ export default function Booking() {
                             <div className="font-medium">
                               {booking.customer?.name}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-gray-500 max-[600px]:hidden">
                               {booking.customer?.email}
                             </div>
                           </div>
                         </div>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className="max-[1420px]:hidden">
                         <div className="flex items-center gap-2">
                           <Car className="w-4 h-4 text-gray-500" />
                           <div>
@@ -249,7 +262,7 @@ export default function Booking() {
                         </div>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className="max-[1000px]:hidden">
                         <div>
                           <div className="font-medium">
                             {booking.service?.name}
@@ -260,7 +273,7 @@ export default function Booking() {
                         </div>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className="max-[1200px]:hidden">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4 text-gray-500" />
                           <div>
@@ -280,7 +293,7 @@ export default function Booking() {
                         </div>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className="max-[600px]:hidden">
                         {booking.technician ? (
                           <div className="flex items-center gap-2">
                             <UserCheck className="w-4 h-4 text-green-500" />
@@ -347,7 +360,20 @@ export default function Booking() {
                                 Reject Booking
                               </DropdownMenuItem>
                             )}
-
+                            {booking.jobs.length > 0 &&
+                              booking.jobs[0].stage === "COMPLETION" && (
+                                <DropdownMenuItem
+                                  className="cursor-pointer flex items-center justify-center"
+                                  onClick={() =>
+                                    setQuoteModal({ booking, open: true })
+                                  }
+                                >
+                                  Generate Quote
+                                </DropdownMenuItem>
+                              )}
+                            {booking.status !== "REJECTED" && (
+                              <DropdownMenuSeparator />
+                            )}
                             <DropdownMenuItem
                               className="cursor-pointer flex items-center justify-center"
                               onClick={() =>
@@ -407,6 +433,13 @@ export default function Booking() {
         <ViewBookingModal
           viewBooking={viewBooking}
           setViewBooking={setViewBooking}
+        />
+      )}
+      {quoteModal.open && (
+        <GenerateQuoteModal
+          quoteModal={quoteModal}
+          setQuoteModal={setQuoteModal}
+          fetchBookings={fetchBookings}
         />
       )}
     </>

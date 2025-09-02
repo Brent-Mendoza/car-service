@@ -113,9 +113,9 @@ export async function getBookings(req, res) {
     } else if (req.user.role === "TECHNICIAN") {
       baseWhere.technicianId = req.user.userId
     }
-    // ADMIN sees all bookings (no additional filter)
+    // ADMIN sees all bookings
 
-    // Search filters - search across multiple related fields
+    // Search filters
     let searchWhere = {}
     if (search) {
       searchWhere = {
@@ -144,7 +144,7 @@ export async function getBookings(req, res) {
       ...statusWhere,
     }
 
-    // Sort options
+    // Base sort options (fallback)
     let orderBy
     switch (sort) {
       case "latest":
@@ -204,9 +204,7 @@ export async function getBookings(req, res) {
               notes: {
                 include: {
                   author: {
-                    select: {
-                      name: true,
-                    },
+                    select: { name: true },
                   },
                 },
               },
@@ -217,8 +215,23 @@ export async function getBookings(req, res) {
       prisma.booking.count({ where }),
     ])
 
+    // 🔥 Custom priority sorting in JS
+    const sorted = bookings.sort((a, b) => {
+      const aHasCompletion = a.jobs.some((j) => j.stage === "COMPLETION")
+      const bHasCompletion = b.jobs.some((j) => j.stage === "COMPLETION")
+
+      if (aHasCompletion && !bHasCompletion) return -1
+      if (!aHasCompletion && bHasCompletion) return 1
+
+      if (a.status === "PENDING" && b.status !== "PENDING") return -1
+      if (b.status === "PENDING" && a.status !== "PENDING") return 1
+
+      // fallback to your chosen sort (id_desc here)
+      return b.id - a.id
+    })
+
     res.status(200).json({
-      data: bookings,
+      data: sorted,
       count,
       page: pageNumber,
       pageSize,

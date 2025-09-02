@@ -20,6 +20,14 @@ export async function getAllServices(req, res) {
         }
       : {}
 
+    // 🚨 hide hidden services from customers
+    if (isCustomer) {
+      where = {
+        ...where,
+        hidden: false,
+      }
+    }
+
     //filters
     let orderBy
     switch (sort) {
@@ -111,4 +119,64 @@ export async function deleteService(req, res) {
   if (!service) return res.status(404).json({ message: "Service not found" })
 
   res.status(200).json({ message: "Service deleted successfully" })
+}
+
+export async function unHideService(req, res) {
+  try {
+    const { id } = req.params
+
+    const service = await prisma.service.findUnique({
+      where: { id: parseInt(id) },
+    })
+
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" })
+    }
+
+    if (!service.hidden) {
+      return res.status(400).json({ message: "Service is not hidden" })
+    }
+
+    const updatedService = await prisma.service.update({
+      where: { id: parseInt(id) },
+      data: { hidden: false },
+    })
+
+    res.status(200).json({
+      message: "Service is now made available for customers",
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: "Something went wrong" })
+  }
+}
+
+export async function hideService(req, res) {
+  try {
+    const { id } = req.params
+
+    const service = await prisma.service.findUnique({
+      where: { id: parseInt(id) },
+    })
+
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" })
+    }
+
+    if (service.hidden) {
+      return res.status(400).json({ message: "Service is already hidden" })
+    }
+
+    const updatedService = await prisma.service.update({
+      where: { id: parseInt(id) },
+      data: { hidden: true },
+    })
+
+    res.status(200).json({
+      message: "Service is now hidden from customers",
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: "Something went wrong" })
+  }
 }
