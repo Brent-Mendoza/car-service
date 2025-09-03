@@ -27,6 +27,7 @@ import Technicians, {
 import Car, { loader as CarLoader } from "./pages/customer/cars/Car"
 import { loader as CustomerBookingLoader } from "./pages/customer/CustomerDashboard"
 import { loader as JobLoader } from "./pages/admin/jobs/Job"
+import { loader as TokenLoader } from "./pages/HomeLayout"
 import Service from "./pages/admin/services/Service"
 import LandingPage from "./pages/landing/LandingPage"
 import Booking from "./pages/admin/bookings/Booking"
@@ -36,12 +37,15 @@ import Job from "./pages/admin/jobs/Job"
 import Settings from "./components/Settings"
 import TechSettings from "./pages/technician/components/Settings"
 import AdminSettings from "./pages/admin/components/Settings"
+import ErrorBoundary from "./components/ErrorBoundary"
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
       element: <HomeLayout />,
+      loader: TokenLoader,
+      errorElement: <ErrorBoundary />,
       children: [
         {
           index: true,
@@ -69,6 +73,7 @@ function App() {
       path: "/admin",
       element: <AdminPortal />,
       loader: AdminLoader,
+      errorElement: <ErrorBoundary />,
       children: [
         {
           index: true,
@@ -124,6 +129,7 @@ function App() {
       path: "/tech",
       element: <TechnicianPortal />,
       loader: TechnicianLoader,
+      errorElement: <ErrorBoundary />,
       children: [
         {
           index: true,
@@ -139,6 +145,7 @@ function App() {
       path: "/customer",
       element: <CustomerPortal />,
       loader: CustomerLoader,
+      errorElement: <ErrorBoundary />,
       children: [
         {
           index: true,
