@@ -9,7 +9,8 @@ import {
   QuoteIcon,
   Receipt,
 } from "lucide-react"
-import QuoteCard from "@/pages/customer/components/QuoteCard"
+import QuoteCard from "./QuoteCard"
+import EditBillingModal from "./EditBillingModal"
 import InvoiceModal from "./InvoiceModal"
 
 const stages = ["DIAGNOSTIC", "REPAIR", "TESTING", "COMPLETION"]
@@ -20,7 +21,10 @@ export default function Stepper({ booking }) {
     open: false,
     quote: null,
   })
+  const [editBilling, setEditBilling] = useState(false)
   const [invoiceModal, setInvoiceModal] = useState(false)
+
+  const onClose = () => setEditBilling(false)
   const onCloseInvoice = () => setInvoiceModal(false)
 
   const currentStageIndex = stages.indexOf(
@@ -119,7 +123,7 @@ export default function Stepper({ booking }) {
 
               {booking.quote.billing && (
                 <p
-                  className={`text-sm ${
+                  className={`text-sm font-semibold ${
                     booking.quote.billing?.status === "PAID"
                       ? "text-green-600"
                       : "text-red-600"
@@ -128,6 +132,17 @@ export default function Stepper({ booking }) {
                   Billing: {booking.quote.billing?.status || "UNPAID"}
                 </p>
               )}
+              {booking.quote.billing &&
+                booking.quote.billing?.status === "UNPAID" && (
+                  <Button
+                    size="sm"
+                    className="mt-2 flex items-center gap-2 cursor-pointer hover:scale-105 duration-200"
+                    onClick={() => setEditBilling(true)}
+                  >
+                    <CreditCard size={16} /> Edit Billing
+                  </Button>
+                )}
+
               {booking.quote.billing?.status === "PAID" && (
                 <Button
                   size="sm"
@@ -169,6 +184,9 @@ export default function Stepper({ booking }) {
       </Card>
       {quoteCard.open && (
         <QuoteCard quote={quoteCard.quote} setQuoteCard={setQuoteCard} />
+      )}
+      {editBilling && (
+        <EditBillingModal billing={booking.quote?.billing} onClose={onClose} />
       )}
       {invoiceModal && (
         <InvoiceModal booking={booking} onClose={onCloseInvoice} />

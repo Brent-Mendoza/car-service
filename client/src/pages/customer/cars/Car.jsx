@@ -86,7 +86,12 @@ export default function Car() {
       toast.success("Car deleted successfully!")
       fetchCars()
     } catch (error) {
-      toast.error(`Error deleting car`, error)
+      console.log(error)
+      if (error.response?.status === 400) {
+        toast.error(error.response.data.message)
+      } else {
+        toast.error(`Error deleting car`, error)
+      }
     }
   }
 

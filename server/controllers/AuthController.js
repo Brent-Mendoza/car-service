@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken"
 import nodemailer from "nodemailer"
 
 //password hashing
-async function hashingPassword(password) {
+export async function hashingPassword(password) {
   const salt = await bcrypt.genSalt(10)
   const hashedPassword = await bcrypt.hash(password, salt)
 
@@ -75,12 +75,10 @@ export async function signIn(req, res) {
     if (!user) return res.status(400).json({ message: "Invalid Credentials" })
 
     if (user.blocked)
-      return res
-        .status(400)
-        .json({
-          message:
-            "You can no longer access your account please contact the us for more information",
-        })
+      return res.status(400).json({
+        message:
+          "You can no longer access your account please contact the us for more information",
+      })
 
     const doesPasswordMatch = await comparePassword(
       data.password,

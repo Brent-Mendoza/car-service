@@ -8,3 +8,9 @@ export const editUserSchema = z.object({
     .min(11, "Invalid phone number")
     .max(11, "Invalid phone number"),
 })
+
+export const passwordSchema = z.object({
+  new_password: z
+    .string()
+    .min(5, "Password must be at least 5 characters long"),
+})

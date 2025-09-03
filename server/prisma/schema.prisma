@@ -44,7 +44,7 @@ model Car {
   notes     String
   owner     User     @relation(fields: [ownerId], references: [id])
   ownerId   Int
-  bookings  Booking[]
+  bookings  Booking[] 
 }
 
 model Service {

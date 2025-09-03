@@ -10,15 +10,14 @@ import { useNavigate } from "react-router-dom"
 export default function QuoteCard({ quote, setQuoteCard }) {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const acceptQuote = async (id) => {
+  const cancelQuote = async (id) => {
     setLoading(true)
     try {
-      await axiosClient.patch(`/quotes/${id}/accept`)
-
+      await axiosClient.delete(`/quotes/${id}/cancel`)
       setLoading(false)
       setQuoteCard({ quote: null, open: false })
       navigate(0)
-      toast.success("Quote accepted successfully!")
+      toast.success("Quote cancelled successfully!")
     } catch (error) {
       toast.error("Something went wrong!")
       setLoading(false)
@@ -79,13 +78,13 @@ export default function QuoteCard({ quote, setQuoteCard }) {
               <Button
                 size="lg"
                 disabled={loading}
-                className="mt-2 flex items-center gap-2 bg-green-400 cursor-pointer"
-                onClick={() => acceptQuote(quote.quote.id)}
+                className="mt-2 flex items-center gap-2 bg-red-400 cursor-pointer"
+                onClick={() => cancelQuote(quote.quote.id)}
               >
                 {loading ? (
                   <Loader2 className="animate-spin" />
                 ) : (
-                  "Accept Quote"
+                  "Cancel Quote"
                 )}
               </Button>
             </div>

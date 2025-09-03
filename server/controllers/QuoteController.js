@@ -47,3 +47,21 @@ export async function acceptQuote(req, res) {
 
   res.status(200).json({ message: "Quote accepted successfully" })
 }
+
+export async function deleteQuote(req, res) {
+  const { id } = req.params
+
+  const quote = await prisma.quote.findUnique({
+    where: { id: parseInt(id) },
+  })
+
+  if (!quote) {
+    return res.status(404).json({ message: "Quote not found" })
+  }
+
+  const deleteQuote = await prisma.quote.delete({
+    where: { id: parseInt(id) },
+  })
+
+  res.status(200).json({ message: "Quote deleted successfully" })
+}

@@ -26,11 +26,16 @@ import Technicians, {
 } from "./pages/admin/technicians/Technician"
 import Car, { loader as CarLoader } from "./pages/customer/cars/Car"
 import { loader as CustomerBookingLoader } from "./pages/customer/CustomerDashboard"
+import { loader as JobLoader } from "./pages/admin/jobs/Job"
 import Service from "./pages/admin/services/Service"
 import LandingPage from "./pages/landing/LandingPage"
 import Booking from "./pages/admin/bookings/Booking"
 import Part from "./pages/admin/parts/Part"
 import Logs from "./pages/admin/inventory/Logs"
+import Job from "./pages/admin/jobs/Job"
+import Settings from "./components/Settings"
+import TechSettings from "./pages/technician/components/Settings"
+import AdminSettings from "./pages/admin/components/Settings"
 
 function App() {
   const router = createBrowserRouter([
@@ -104,6 +109,15 @@ function App() {
           element: <Technicians />,
           loader: TechnicianListLoader,
         },
+        {
+          path: "jobs",
+          element: <Job />,
+          loader: JobLoader,
+        },
+        {
+          path: "settings",
+          element: <AdminSettings />,
+        },
       ],
     },
     {
@@ -114,6 +128,10 @@ function App() {
         {
           index: true,
           element: <TechnicianDashboard />,
+        },
+        {
+          path: "settings",
+          element: <TechSettings />,
         },
       ],
     },
@@ -131,6 +149,10 @@ function App() {
           path: "cars",
           element: <Car />,
           loader: CarLoader,
+        },
+        {
+          path: "settings",
+          element: <Settings />,
         },
       ],
     },
